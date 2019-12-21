@@ -1,1 +1,0 @@
-CREATE database sdc_pg;
