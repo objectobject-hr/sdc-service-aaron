@@ -3,12 +3,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 // const cors = require('cors');
-const BookingDate = require("../dbhelpers/models").BookingDate;
-const Listing = require("../dbhelpers/models").Listing;
+// const BookingDate = require("../dbhelpers/models").BookingDate;
+// const Listing = require("../dbhelpers/models").Listing;
 const path = require("path");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const db = require("../dbhelpers/index.js");
+const db = require("../dbhelpers/index");
 
 const app = express();
 const port = 3009;

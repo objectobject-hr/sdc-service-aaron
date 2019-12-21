@@ -1,8 +1,11 @@
 // jshint esversion:6
 const faker = require("faker");
-const BookingDate = require("./models").BookingDate;
-const Listing = require("./models").Listing;
-const pgp = require("pg-promise");
+// const BookingDate = require("./models").BookingDate;
+// const Listing = require("./models").Listing;
+// const pgp = require("pg-promise");
+const { Pool, Client } = require("pg");
+const connectLocation = "postgres://localhost:5432/sdc_pg";
+const db = require("./index.js");
 
 listingAdjectives = [
   "sunset roost",
@@ -297,20 +300,41 @@ generateBookingDates = async listing_id => {
           bookingDates.push({
             date,
             available: true,
-            check_in: false,
-            check_out: false,
+            checkin: false,
+            checkout: false,
             rate: Math.floor(Math.random() * 750 + 50),
-            listing_id: l
+            listingid: l
           });
           datecount++;
         }
       }
     }
   }
-  await BookingDate.sync({ force: true })
-    .then(() => BookingDate.bulkCreate(bookingDates, { validate: true }))
-    .then(() => console.log("Created " + datecount + " bookings."))
-    .catch(err => console.log("failed to create bookings", err));
+
+  // using vanilla Postgres...
+  try {
+    // console.log(`connected under generateBookings()`);
+    for (var i = 0; i < bookingDates.length; i++) {
+      await db
+        .query(
+          `INSERT INTO dates (date, available, checkin, checkout, rate, listingid) VALUES ('${bookingDates[i].date}', '${bookingDates[i].available}', '${bookingDates[i].checkin}', '${bookingDates[i].checkout}', '${bookingDates[i].rate}', '${bookingDates[i].listingid}')`
+        )
+        .then(res => console.log(i))
+        .catch(err => console.log(err, "error"));
+    }
+  } catch (error) {
+    console.log(`can't seed: ${error}`);
+  } finally {
+    // await db.end(); // close connection
+    console.log(`disconnected from db`);
+  }
+
+  // using Sequelize on MySQL...
+  // await BookingDate.sync({ force: true })
+  //   .then(() => BookingDate.bulkCreate(bookingDates, { validate: true }))
+  //   .then(() => console.log("Created " + datecount + " bookings."))
+  //   .catch(err => console.log("failed to create bookings", err));
+  // await db.none()
 };
 
 generateListings = async () => {
@@ -318,7 +342,7 @@ generateListings = async () => {
   let listings = [];
   let obj;
   let listingcount = 0;
-  for (let i = 0; i < 500000; i++) {
+  for (let i = 0; i < 1000000; i++) {
     obj = {};
     let title =
       listingAdjectives[Math.floor(Math.random() * listingAdjectives.length)] +
@@ -329,31 +353,49 @@ generateListings = async () => {
       " " +
       listingAmenities[Math.floor(Math.random() * listingStyles.length)];
     obj.title = title.slice(0, 1).toUpperCase() + title.slice(1);
-    obj.venue_type =
-      listingType[Math.floor(Math.random() * listingType.length)];
+    obj.venuetype = listingType[Math.floor(Math.random() * listingType.length)];
     obj.bedrooms = Math.floor(Math.random() * 5 + 1);
-    obj.sleep_capacity = obj.bedrooms * 2 + Math.floor(Math.random() * 3 + 1);
+    obj.sleepcapacity = obj.bedrooms * 2 + Math.floor(Math.random() * 3 + 1);
     obj.bathrooms = Math.floor(Math.random() * 3 + 1);
-    obj.square_feet = Math.floor(Math.random() * 600 + 1) * 10 + 1000;
-    obj.review_overview =
+    obj.squarefeet = Math.floor(Math.random() * 600 + 1) * 10 + 1000;
+    obj.reviewoverview =
       listingReview[Math.floor(Math.random() * listingReview.length)];
     obj.rating = Math.floor(Math.random() * 10) / 10 + 4;
-    obj.review_number = Math.floor(Math.random() * 200 + 15);
-    obj.owner = faker.name.findName();
-    obj.cleaning_fee = Math.floor(Math.random() * 100) + 10;
-    obj.state = faker.address.state();
+    obj.reviewnumber = Math.floor(Math.random() * 200 + 15);
+    obj.owners = faker.name.findName();
+    obj.cleaningfee = Math.floor(Math.random() * 100) + 10;
+    obj.states = faker.address.state();
     obj.city = faker.address.city();
-    k = i + 1;
+    // k = i + 1;
     obj.pic = faker.image.image();
     listings.push(obj);
     listingcount = listingcount + 1;
   }
 
+  // using vanilla Postgres...
+  try {
+    // console.log(`connected under generateBookings()`);
+    for (var i = 0; i < listings.length; i++) {
+      await db
+        .query(
+          `INSERT INTO listings (title, venuetype, bedrooms, sleepcapacity, bathrooms, squarefeet, reviewoverview, rating, reviewnumber, owners, cleaningfee, states, city, pic) VALUES ($$${listings[i].title}$$, $$${listings[i].venuetype}$$, $$${listings[i].bedrooms}$$, $$${listings[i].sleepcapacity}$$, $$${listings[i].bathrooms}$$, $$${listings[i].squarefeet}$$, $$${listings[i].reviewoverview}$$, $$${listings[i].rating}$$, $$${listings[i].reviewnumber}$$, $$${listings[i].owners}$$, $$${listings[i].cleaningfee}$$, $$${listings[i].states}$$, $$${listings[i].city}$$, $$${listings[i].pic}$$)`
+        )
+        .then(res => console.log(i))
+        .catch(err => console.log(err, "error"));
+    }
+  } catch (error) {
+    console.log(`can't seed: ${error}`);
+  } finally {
+    await db.end(); // close connection
+    console.log(`disconnected from db`);
+  }
+
+  // using Sequelize on MySQL...
   // console.log(listings);
-  await Listing.sync({ force: true })
-    .then(() => Listing.bulkCreate(listings, { validate: true }))
-    .then(() => console.log("Created " + listingcount + " listings."))
-    .catch(err => console.log("failed to create listings", err));
+  // await Listing.sync({ force: true })
+  //   .then(() => Listing.bulkCreate(listings, { validate: true }))
+  //   .then(() => console.log("Created " + listingcount + " listings."))
+  //   .catch(err => console.log("failed to create listings", err));
 };
 
 generateBookingDates();
