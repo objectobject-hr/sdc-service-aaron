@@ -5,7 +5,13 @@ const faker = require("faker");
 // const pgp = require("pg-promise");
 const { Pool, Client } = require("pg");
 const connectLocation = "postgres://localhost:5432/sdc_pg";
+const path = require("path");
 const db = require("./index.js");
+const fs = require("fs");
+
+const file = path.join(__dirname, "listings.csv");
+const string = "";
+const stream = fs.createWriteStream(file);
 
 listingAdjectives = [
   "sunset roost",
@@ -287,116 +293,187 @@ dates = [
   "31"
 ];
 
-generateBookingDates = async listing_id => {
-  let datecount = 0;
-  let bookingDates = [];
-  let date;
-  for (let i = 0; i < years.length; i++) {
-    for (let j = 0; j < datesInMonths.length; j++) {
-      for (let k = 0; k < datesInMonths[j]; k++) {
-        for (let l = 1; l < 101; l++) {
-          date = years[i] + "-" + months[j] + "-" + dates[k];
-          // date = "2020-09-17";
-          bookingDates.push({
-            date,
-            available: true,
-            checkin: false,
-            checkout: false,
-            rate: Math.floor(Math.random() * 750 + 50),
-            listingid: l
-          });
-          datecount++;
-        }
+writeCSV = () => {
+  let i = 20;
+
+  function write() {
+    let ok = true;
+
+    do {
+      i--;
+      if (i % 10000 === 0) {
+        console.log(i);
       }
+
+      // let k;
+      let listings = [];
+      let obj;
+      let listingcount = 0;
+      // for (let i = 0; i < 1000000; i++) {
+      obj = {};
+      let title =
+        listingAdjectives[
+          Math.floor(Math.random() * listingAdjectives.length)
+        ] +
+        " " +
+        listingStyles[Math.floor(Math.random() * listingStyles.length)] +
+        " " +
+        listingAmenities[Math.floor(Math.random() * listingStyles.length)] +
+        " " +
+        listingAmenities[Math.floor(Math.random() * listingStyles.length)];
+      title = title.slice(0, 1).toUpperCase() + title.slice(1);
+      let venuetype =
+        listingType[Math.floor(Math.random() * listingType.length)];
+      let bedrooms = Math.floor(Math.random() * 5 + 1);
+      let sleepcapacity = bedrooms * 2 + Math.floor(Math.random() * 3 + 1);
+      let bathrooms = Math.floor(Math.random() * 3 + 1);
+      let squarefeet = Math.floor(Math.random() * 600 + 1) * 10 + 1000;
+      let reviewoverview =
+        listingReview[Math.floor(Math.random() * listingReview.length)];
+      let rating = Math.floor(Math.random() * 10) / 10 + 4;
+      let reviewnumber = Math.floor(Math.random() * 200 + 15);
+      let owners = faker.name.findName();
+      let cleaningfee = Math.floor(Math.random() * 100) + 10;
+      let states = faker.address.state();
+      let city = faker.address.city();
+      // k = i + 1;
+      let pic = faker.image.image();
+      let data = `${title}, ${venuetype}, ${bedrooms}, ${sleepcapacity}, ${bathrooms}, ${squarefeet}, ${reviewoverview}, ${rating}, ${reviewnumber}, ${owners}, ${cleaningfee}, ${states}, ${city}, ${pic}`;
+      // listings.push(obj);
+      // listingcount = listingcount + 1;
+
+      if (i === 0) {
+        stream.write(JSON.stringify(data) + "\n");
+        // stream.end();
+      } else {
+        ok = stream.write(JSON.stringify(data) + "\n");
+      }
+      // }
+    } while (i > 0 && ok);
+    if (i > 0) {
+      stream.once("drain", write);
     }
   }
-
-  // using vanilla Postgres...
-  try {
-    // console.log(`connected under generateBookings()`);
-    for (var i = 0; i < bookingDates.length; i++) {
-      await db
-        .query(
-          `INSERT INTO dates (date, available, checkin, checkout, rate, listingid) VALUES ('${bookingDates[i].date}', '${bookingDates[i].available}', '${bookingDates[i].checkin}', '${bookingDates[i].checkout}', '${bookingDates[i].rate}', '${bookingDates[i].listingid}')`
-        )
-        .then(res => console.log(i))
-        .catch(err => console.log(err, "error"));
-    }
-  } catch (error) {
-    console.log(`can't seed: ${error}`);
-  } finally {
-    // await db.end(); // close connection
-    console.log(`disconnected from db`);
-  }
-
-  // using Sequelize on MySQL...
-  // await BookingDate.sync({ force: true })
-  //   .then(() => BookingDate.bulkCreate(bookingDates, { validate: true }))
-  //   .then(() => console.log("Created " + datecount + " bookings."))
-  //   .catch(err => console.log("failed to create bookings", err));
-  // await db.none()
+  console.log(i);
+  write();
+  console.log(
+    `you've successfully written to the CSV file, export to database`
+  );
 };
 
-generateListings = async () => {
-  let k;
-  let listings = [];
-  let obj;
-  let listingcount = 0;
-  for (let i = 0; i < 1000000; i++) {
-    obj = {};
-    let title =
-      listingAdjectives[Math.floor(Math.random() * listingAdjectives.length)] +
-      " " +
-      listingStyles[Math.floor(Math.random() * listingStyles.length)] +
-      " " +
-      listingAmenities[Math.floor(Math.random() * listingStyles.length)] +
-      " " +
-      listingAmenities[Math.floor(Math.random() * listingStyles.length)];
-    obj.title = title.slice(0, 1).toUpperCase() + title.slice(1);
-    obj.venuetype = listingType[Math.floor(Math.random() * listingType.length)];
-    obj.bedrooms = Math.floor(Math.random() * 5 + 1);
-    obj.sleepcapacity = obj.bedrooms * 2 + Math.floor(Math.random() * 3 + 1);
-    obj.bathrooms = Math.floor(Math.random() * 3 + 1);
-    obj.squarefeet = Math.floor(Math.random() * 600 + 1) * 10 + 1000;
-    obj.reviewoverview =
-      listingReview[Math.floor(Math.random() * listingReview.length)];
-    obj.rating = Math.floor(Math.random() * 10) / 10 + 4;
-    obj.reviewnumber = Math.floor(Math.random() * 200 + 15);
-    obj.owners = faker.name.findName();
-    obj.cleaningfee = Math.floor(Math.random() * 100) + 10;
-    obj.states = faker.address.state();
-    obj.city = faker.address.city();
-    // k = i + 1;
-    obj.pic = faker.image.image();
-    listings.push(obj);
-    listingcount = listingcount + 1;
-  }
+writeCSV();
+console.log(`wrote CSV`);
 
-  // using vanilla Postgres...
-  try {
-    // console.log(`connected under generateBookings()`);
-    for (var i = 0; i < listings.length; i++) {
-      await db
-        .query(
-          `INSERT INTO listings (title, venuetype, bedrooms, sleepcapacity, bathrooms, squarefeet, reviewoverview, rating, reviewnumber, owners, cleaningfee, states, city, pic) VALUES ($$${listings[i].title}$$, $$${listings[i].venuetype}$$, $$${listings[i].bedrooms}$$, $$${listings[i].sleepcapacity}$$, $$${listings[i].bathrooms}$$, $$${listings[i].squarefeet}$$, $$${listings[i].reviewoverview}$$, $$${listings[i].rating}$$, $$${listings[i].reviewnumber}$$, $$${listings[i].owners}$$, $$${listings[i].cleaningfee}$$, $$${listings[i].states}$$, $$${listings[i].city}$$, $$${listings[i].pic}$$)`
-        )
-        .then(res => console.log(i))
-        .catch(err => console.log(err, "error"));
-    }
-  } catch (error) {
-    console.log(`can't seed: ${error}`);
-  } finally {
-    await db.end(); // close connection
-    console.log(`disconnected from db`);
-  }
+// generateBookingDates = async listing_id => {
+//   let datecount = 0;
+//   let bookingDates = [];
+//   let date;
+//   for (let i = 0; i < years.length; i++) {
+//     for (let j = 0; j < datesInMonths.length; j++) {
+//       for (let k = 0; k < datesInMonths[j]; k++) {
+//         for (let l = 1; l < 101; l++) {
+//           date = years[i] + "-" + months[j] + "-" + dates[k];
+//           // date = "2020-09-17";
+//           bookingDates.push({
+//             date,
+//             available: true,
+//             checkin: false,
+//             checkout: false,
+//             rate: Math.floor(Math.random() * 750 + 50),
+//             listingid: l
+//           });
+//           datecount++;
+//         }
+//       }
+//     }
+//   }
 
-  // using Sequelize on MySQL...
-  // console.log(listings);
-  // await Listing.sync({ force: true })
-  //   .then(() => Listing.bulkCreate(listings, { validate: true }))
-  //   .then(() => console.log("Created " + listingcount + " listings."))
-  //   .catch(err => console.log("failed to create listings", err));
-};
+//   // using vanilla Postgres...
+//   try {
+//     // console.log(`connected under generateBookings()`);
+//     for (var i = 0; i < bookingDates.length; i++) {
+//       await db
+//         .query(
+//           `INSERT INTO dates (date, available, checkin, checkout, rate, listingid) VALUES ('${bookingDates[i].date}', '${bookingDates[i].available}', '${bookingDates[i].checkin}', '${bookingDates[i].checkout}', '${bookingDates[i].rate}', '${bookingDates[i].listingid}')`
+//         )
+//         .then(res => console.log(i))
+//         .catch(err => console.log(err, "error"));
+//     }
+//   } catch (error) {
+//     console.log(`can't seed: ${error}`);
+//   } finally {
+//     // await db.end(); // close connection
+//     console.log(`disconnected from db`);
+//   }
 
-generateBookingDates();
-generateListings();
+//   // using Sequelize on MySQL...
+//   // await BookingDate.sync({ force: true })
+//   //   .then(() => BookingDate.bulkCreate(bookingDates, { validate: true }))
+//   //   .then(() => console.log("Created " + datecount + " bookings."))
+//   //   .catch(err => console.log("failed to create bookings", err));
+//   // await db.none()
+// };
+
+// generateListings = async () => {
+//   let k;
+//   let listings = [];
+//   let obj;
+//   let listingcount = 0;
+//   for (let i = 0; i < 1000000; i++) {
+//     obj = {};
+//     let title =
+//       listingAdjectives[Math.floor(Math.random() * listingAdjectives.length)] +
+//       " " +
+//       listingStyles[Math.floor(Math.random() * listingStyles.length)] +
+//       " " +
+//       listingAmenities[Math.floor(Math.random() * listingStyles.length)] +
+//       " " +
+//       listingAmenities[Math.floor(Math.random() * listingStyles.length)];
+//     obj.title = title.slice(0, 1).toUpperCase() + title.slice(1);
+//     obj.venuetype = listingType[Math.floor(Math.random() * listingType.length)];
+//     obj.bedrooms = Math.floor(Math.random() * 5 + 1);
+//     obj.sleepcapacity = obj.bedrooms * 2 + Math.floor(Math.random() * 3 + 1);
+//     obj.bathrooms = Math.floor(Math.random() * 3 + 1);
+//     obj.squarefeet = Math.floor(Math.random() * 600 + 1) * 10 + 1000;
+//     obj.reviewoverview =
+//       listingReview[Math.floor(Math.random() * listingReview.length)];
+//     obj.rating = Math.floor(Math.random() * 10) / 10 + 4;
+//     obj.reviewnumber = Math.floor(Math.random() * 200 + 15);
+//     obj.owners = faker.name.findName();
+//     obj.cleaningfee = Math.floor(Math.random() * 100) + 10;
+//     obj.states = faker.address.state();
+//     obj.city = faker.address.city();
+//     // k = i + 1;
+//     obj.pic = faker.image.image();
+//     listings.push(obj);
+//     listingcount = listingcount + 1;
+//   }
+
+//   // using vanilla Postgres...
+//   try {
+//     // console.log(`connected under generateBookings()`);
+//     for (var i = 0; i < listings.length; i++) {
+//       await db
+//         .query(
+//           `INSERT INTO listings (title, venuetype, bedrooms, sleepcapacity, bathrooms, squarefeet, reviewoverview, rating, reviewnumber, owners, cleaningfee, states, city, pic) VALUES ($$${listings[i].title}$$, $$${listings[i].venuetype}$$, $$${listings[i].bedrooms}$$, $$${listings[i].sleepcapacity}$$, $$${listings[i].bathrooms}$$, $$${listings[i].squarefeet}$$, $$${listings[i].reviewoverview}$$, $$${listings[i].rating}$$, $$${listings[i].reviewnumber}$$, $$${listings[i].owners}$$, $$${listings[i].cleaningfee}$$, $$${listings[i].states}$$, $$${listings[i].city}$$, $$${listings[i].pic}$$)`
+//         )
+//         .then(res => console.log(i))
+//         .catch(err => console.log(err, "error"));
+//     }
+//   } catch (error) {
+//     console.log(`can't seed: ${error}`);
+//   } finally {
+//     await db.end(); // close connection
+//     console.log(`disconnected from db`);
+//   }
+
+//   // using Sequelize on MySQL...
+//   // console.log(listings);
+//   // await Listing.sync({ force: true })
+//   //   .then(() => Listing.bulkCreate(listings, { validate: true }))
+//   //   .then(() => console.log("Created " + listingcount + " listings."))
+//   //   .catch(err => console.log("failed to create listings", err));
+// };
+
+// generateBookingDates();
+// generateListings();

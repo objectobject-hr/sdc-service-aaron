@@ -11,7 +11,8 @@ const Op = Sequelize.Op;
 const db = require("../dbhelpers/index");
 
 const app = express();
-const port = 3009;
+// const port = 3009;
+const PORT = process.env.PORT || 3009;
 
 // app.use(cors());
 app.use(bodyParser.json());
@@ -23,8 +24,8 @@ app.use(express.static(path.join(__dirname, "../client/dist")));
 //   BookingDate.
 // })
 
-app.listen(port, () => {
-  console.log("App is listening on port", port);
+app.listen(PORT, () => {
+  console.log("we are listening to port", PORT + ",  m o s t l y   k e y s");
 });
 
 // app.get("/dates/:id", (req, res) => {
