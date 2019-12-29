@@ -8,7 +8,7 @@ const morgan = require("morgan");
 const path = require("path");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const db = require("../dbhelpers/index");
+const db = require("../dbhelpers/postgres/index"); // uncomment for postgres
 
 const app = express();
 // const port = 3009;

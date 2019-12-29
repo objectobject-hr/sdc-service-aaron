@@ -8,7 +8,8 @@
     "start": "nodemon server/index.js",
     "react-dev": "webpack -d --watch",
     "convert-css": "sass  --watch client/src/style.sass:client/src/style.css",
-    "seed-db": "node dbhelpers/seed.js"
+    "pgseed": "node --max-old-space-size=7076 dbhelpers/postgres/pgseed.js",
+    "mongoseed": "node --max-old-space-size=7076 dbhelpers/mongodb/mongoseed.js"
   },
   "repository": {
     "type": "git",
