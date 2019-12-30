@@ -1,5 +1,5 @@
 {
-  "name": "al-front-end-capstone",
+  "name": "as-systems-design-capstone",
   "version": "1.0.0",
   "description": "service for booking tool/top nav header",
   "main": "./server/index.js",
@@ -9,25 +9,28 @@
     "react-dev": "webpack -d --watch",
     "convert-css": "sass  --watch client/src/style.sass:client/src/style.css",
     "pgseed": "node --max-old-space-size=7076 dbhelpers/postgres/pgseed.js",
-    "mongoseed": "node --max-old-space-size=7076 dbhelpers/mongodb/mongoseed.js"
+    "mongocsv": "node --max-old-space-size=7076 dbhelpers/mongodb/mongoseed.js",
+    "mongoseed": "mongoimport --db=awayhome --type=csv --collection=listings --headerline --file=dbhelpers/mongodb/mongolistings.csv --numInsertionWorkers 4"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/liu-austin/al-front-end-capstone.git"
+    "url": "git+https://github.com/aaronsomo"
   },
-  "author": "Austin Liu",
+  "author": "Aaron Southammavong",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/liu-austin/al-front-end-capstone/issues"
+    "url": "https://github.com/aaronsomo"
   },
-  "homepage": "https://github.com/liu-austin/al-front-end-capstone#readme",
+  "homepage": "https://github.com/aaronsomo",
   "dependencies": {
     "axios": "^0.19.0",
+    "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "css-loader": "^3.3.2",
     "express": "^4.17.1",
     "faker": "^4.1.0",
+    "mongoose": "^5.8.3",
     "morgan": "^1.9.1",
     "mysql2": "^2.0.1",
     "pg": "^7.15.1",
