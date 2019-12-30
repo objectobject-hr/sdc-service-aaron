@@ -9,7 +9,7 @@ const path = require("path");
 const db = require("./index.js");
 const fs = require("fs");
 
-const file = path.join(__dirname, "listings.csv");
+const file = path.join(__dirname, "pglistings.csv");
 const string = "";
 const stream = fs.createWriteStream(file);
 
@@ -296,7 +296,7 @@ dates = [
 writeCSV = callback => {
   let i = 10000000;
 
-  function write() {
+  function generateData() {
     let ok = true;
 
     do {
@@ -351,14 +351,12 @@ writeCSV = callback => {
       // }
     } while (i > 0 && ok);
     if (i > 0) {
-      stream.once("drain", write);
+      stream.once("drain", generateData);
     }
   }
   console.log(i);
-  write();
-  console.log(
-    `you've successfully written to the CSV file, export to database`
-  );
+  generateData();
+  console.log(`you've successfully written the CSV file, export to database`);
 };
 
 writeCSV(() => {
@@ -369,7 +367,7 @@ writeCSV(() => {
       console.log(err);
     } else {
       db.query(
-        `COPY listings FROM '/Users/aaronsouthammavong/hrla33/sdc-service-aaron/dbhelpers/listings.csv' DELIMITER ';' CSV`
+        `COPY listings FROM '/Users/aaronsouthammavong/hrla33/sdc-service-aaron/dbhelpers/pglistings.csv' DELIMITER ';' CSV`
       )
         .then(() => {
           console.log(`successfully seeded database`);
@@ -460,34 +458,34 @@ writeCSV(() => {
 //   let obj;
 //   let listingcount = 0;
 //   for (let i = 0; i < 1000000; i++) {
-//     obj = {};
-//     let title =
-//       listingAdjectives[Math.floor(Math.random() * listingAdjectives.length)] +
-//       " " +
-//       listingStyles[Math.floor(Math.random() * listingStyles.length)] +
-//       " " +
-//       listingAmenities[Math.floor(Math.random() * listingStyles.length)] +
-//       " " +
-//       listingAmenities[Math.floor(Math.random() * listingStyles.length)];
-//     obj.title = title.slice(0, 1).toUpperCase() + title.slice(1);
-//     obj.venuetype = listingType[Math.floor(Math.random() * listingType.length)];
-//     obj.bedrooms = Math.floor(Math.random() * 5 + 1);
-//     obj.sleepcapacity = obj.bedrooms * 2 + Math.floor(Math.random() * 3 + 1);
-//     obj.bathrooms = Math.floor(Math.random() * 3 + 1);
-//     obj.squarefeet = Math.floor(Math.random() * 600 + 1) * 10 + 1000;
-//     obj.reviewoverview =
-//       listingReview[Math.floor(Math.random() * listingReview.length)];
-//     obj.rating = Math.floor(Math.random() * 10) / 10 + 4;
-//     obj.reviewnumber = Math.floor(Math.random() * 200 + 15);
-//     obj.owners = faker.name.findName();
-//     obj.cleaningfee = Math.floor(Math.random() * 100) + 10;
-//     obj.states = faker.address.state();
-//     obj.city = faker.address.city();
-//     // k = i + 1;
-//     obj.pic = faker.image.image();
-//     listings.push(obj);
-//     listingcount = listingcount + 1;
-//   }
+//   obj = {};
+//   let title =
+//     listingAdjectives[Math.floor(Math.random() * listingAdjectives.length)] +
+//     " " +
+//     listingStyles[Math.floor(Math.random() * listingStyles.length)] +
+//     " " +
+//     listingAmenities[Math.floor(Math.random() * listingStyles.length)] +
+//     " " +
+//     listingAmenities[Math.floor(Math.random() * listingStyles.length)];
+//   obj.title = title.slice(0, 1).toUpperCase() + title.slice(1);
+//   obj.venuetype = listingType[Math.floor(Math.random() * listingType.length)];
+//   obj.bedrooms = Math.floor(Math.random() * 5 + 1);
+//   obj.sleepcapacity = obj.bedrooms * 2 + Math.floor(Math.random() * 3 + 1);
+//   obj.bathrooms = Math.floor(Math.random() * 3 + 1);
+//   obj.squarefeet = Math.floor(Math.random() * 600 + 1) * 10 + 1000;
+//   obj.reviewoverview =
+//     listingReview[Math.floor(Math.random() * listingReview.length)];
+//   obj.rating = Math.floor(Math.random() * 10) / 10 + 4;
+//   obj.reviewnumber = Math.floor(Math.random() * 200 + 15);
+//   obj.owners = faker.name.findName();
+//   obj.cleaningfee = Math.floor(Math.random() * 100) + 10;
+//   obj.states = faker.address.state();
+//   obj.city = faker.address.city();
+//   // k = i + 1;
+//   obj.pic = faker.image.image();
+//   listings.push(obj);
+//   listingcount = listingcount + 1;
+// }
 
 //   // using vanilla Postgres...
 //   try {
