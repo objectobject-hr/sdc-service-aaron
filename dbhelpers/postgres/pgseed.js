@@ -367,7 +367,7 @@ writeCSV(() => {
       console.log(err);
     } else {
       db.query(
-        `COPY listings FROM '/Users/aaronsouthammavong/hrla33/sdc-service-aaron/dbhelpers/pglistings.csv' DELIMITER ';' CSV`
+        `COPY listings FROM '/Users/aaronsouthammavong/hrla33/sdc-service-aaron/dbhelpers/postgres/pglistings.csv' DELIMITER ';' CSV`
       )
         .then(() => {
           console.log(`successfully seeded database`);
