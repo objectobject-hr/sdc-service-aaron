@@ -16,7 +16,8 @@ let schema = new mongoose.Schema({
   cleaningfee: String,
   states: String,
   city: String,
-  pic: String
+  pic: String,
+  listingId: { type: Number, index: true }
 });
 
 let Listing = mongoose.model("Listing", schema);
