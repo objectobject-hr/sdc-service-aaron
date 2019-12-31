@@ -9,7 +9,7 @@ const file = path.join(__dirname, "mongolistings.csv");
 const stream = fs.createWriteStream(file);
 
 const header =
-  "title,venuetype,bedrooms,sleepcapacity,bathrooms,squarefeet,reviewoverview,rating,reviewnumber,owners,cleaningfee,states,city,pic\n";
+  "title,venuetype,bedrooms,sleepcapacity,bathrooms,squarefeet,reviewoverview,rating,reviewnumber,owners,cleaningfee,states,city,pic,listingid\n";
 stream.write(header, "utf8");
 
 listingAdjectives = [
@@ -335,7 +335,8 @@ writeCSV = callback => {
       let states = faker.address.state();
       let city = faker.address.city();
       let pic = faker.image.image();
-      data = `${title},${venuetype},${bedrooms},${sleepcapacity},${bathrooms},${squarefeet},${reviewoverview},${rating},${reviewnumber},${owners},${cleaningfee},${states},${city},${pic}\n`;
+      let listingid = i;
+      data = `${title},${venuetype},${bedrooms},${sleepcapacity},${bathrooms},${squarefeet},${reviewoverview},${rating},${reviewnumber},${owners},${cleaningfee},${states},${city},${pic},${listingid}\n`;
       // listings.push(obj);
       // listingcount = listingcount + 1;
 
