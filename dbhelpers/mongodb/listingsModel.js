@@ -2,25 +2,28 @@ const mongoose = require("mongoose");
 const db = require("./index.js");
 mongoose.Promise = require("bluebird");
 
-let schema = new mongoose.Schema({
-  title: String,
-  venuetype: String,
-  bedrooms: Number,
-  sleepcapacity: Number,
-  bathrooms: Number,
-  squarefeet: Number,
-  reviewoverview: String,
-  rating: String,
-  reviewnumber: Number,
-  owners: String,
-  cleaningfee: String,
-  states: String,
-  city: String,
-  pic: String,
-  listingid: { type: Number, index: true }
-});
+const schema = new mongoose.Schema(
+  {
+    title: String,
+    venuetype: String,
+    bedrooms: Number,
+    sleepcapacity: Number,
+    bathrooms: Number,
+    squarefeet: Number,
+    reviewoverview: String,
+    rating: String,
+    reviewnumber: Number,
+    owners: String,
+    cleaningfee: String,
+    states: String,
+    city: String,
+    pic: String,
+    listingid: { type: Number, index: true }
+  },
+  { collection: "listings" }
+); // add second parameter 'collection: ____' to let mongo know to query this specific collection
 
-let Listing = mongoose.model("Listing", schema);
+const Listing = mongoose.model("Listing", schema);
 
 const getListingById = (req, callback) => {
   Listing.findOne({ listingid: req.params.id }).exec((err, results) => {
@@ -35,8 +38,10 @@ const getListingById = (req, callback) => {
 };
 
 const getLimit10 = (req, callback) => {
+  console.log(`INSIDE getLimit10 - this is req.query: `, req.query);
   Listing.find({
-    title: /req.query.query/
+    // title: /req.query.query/
+    title: { $regex: req.query.query, $options: "i" } //$options:'i' makes it case insensitive
   })
     .limit(10)
     .exec((err, results) => {

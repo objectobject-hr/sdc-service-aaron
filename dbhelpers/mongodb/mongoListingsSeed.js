@@ -5,7 +5,7 @@ const db = require("./index.js");
 
 const path = require("path");
 const fs = require("fs");
-const file = path.join(__dirname, "mongolistings.csv");
+const file = path.join(__dirname, "mongoListings.csv");
 const stream = fs.createWriteStream(file);
 
 const header =
@@ -240,58 +240,6 @@ listingReview = [
   "Good for families."
 ];
 
-months = [
-  "01",
-  "02",
-  "03",
-  "04",
-  "05",
-  "06",
-  "07",
-  "08",
-  "09",
-  "10",
-  "11",
-  "12"
-];
-
-datesInMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-years = [2019, 2020];
-
-dates = [
-  "01",
-  "02",
-  "03",
-  "04",
-  "05",
-  "06",
-  "07",
-  "08",
-  "09",
-  "10",
-  "11",
-  "12",
-  "13",
-  "14",
-  "15",
-  "16",
-  "17",
-  "18",
-  "19",
-  "20",
-  "21",
-  "22",
-  "23",
-  "24",
-  "25",
-  "26",
-  "27",
-  "28",
-  "29",
-  "30",
-  "31"
-];
-
 writeCSV = callback => {
   let i = 10000000;
 
@@ -307,7 +255,8 @@ writeCSV = callback => {
       let listings = [];
       let obj;
       let listingcount = 0;
-      let data = "aksdmflkasmdf";
+      // let data =
+      //   "title,venuetype,bedrooms,sleepcapacity,bathrooms,squarefeet,reviewoverview,rating,reviewnumber,owners,cleaningfee,states,city,pic,listingid";
       obj = {};
       let title =
         listingAdjectives[
