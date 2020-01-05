@@ -105,6 +105,7 @@ dist
 
 .DS_Store
 
-mongolistings.csv
+mongoBookingDates.csv
+mongoListings.csv
 
 pglistings.csv

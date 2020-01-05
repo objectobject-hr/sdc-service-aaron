@@ -1,20 +1,22 @@
 // USING CSV-WRITER LIBRARY...
-const createCsvStringifier = require("csv-writer").createObjectCsvStringifier;
-const mongoose = require("mongoose"); // only necessary if we plan to seed CSV directly into MongoDB
-const db = require("./index.js");
-const fs = require("fs");
-const file = fs.createWriteStream(
-  "../../dbhelpers/mongodb/mongoBookingDates.csv"
-);
+// const createCsvStringifier = require("csv-writer").createObjectCsvStringifier;// using csv-writer
 
-// using traditional fs write...
-// const path = require("path");
+const mongoose = require("mongoose"); // only necessary if we plan to seed CSV directly into MongoDB
+// const db = require("./index.js");
+
+// USING CSV-WRITER
 // const fs = require("fs");
-// const file = path.join(__dirname, "mongoBookingDates.csv");
-// const stream = fs.createWriteStream(file);
-// const header =
-//   "date,available,checkin,rate,checkout,listingid\n";
-// stream.write(header, "utf8");
+// const file = fs.createWriteStream(
+//   "../../dbhelpers/mongodb/mongoBookingDates.csv"
+// );
+
+const path = require("path");
+const fs = require("fs");
+const file = path.join(__dirname, "mongoBookingDates.csv");
+const stream = fs.createWriteStream(file);
+
+const header = "date,available,checkin,rate,checkout,listingid\n";
+stream.write(header, "utf8");
 
 months = [
   "01",
@@ -69,56 +71,115 @@ dates = [
   "31"
 ];
 
-// using csv-writer
-const csvStringifier = createCsvStringifier({
-  header: [
-    { id: "date", title: "date" },
-    { id: "available", title: "available" },
-    { id: "checkin", title: "checkin" },
-    { id: "rate", title: "rate" },
-    { id: "checkout", title: "checkout" },
-    { id: "listingid", title: "listingid" }
-  ]
-});
+// USING CSV-WRITER
+// const csvStringifier = createCsvStringifier({
+//   header: [
+//     { id: "date", title: "date" },
+//     { id: "available", title: "available" },
+//     { id: "checkin", title: "checkin" },
+//     { id: "rate", title: "rate" },
+//     { id: "checkout", title: "checkout" },
+//     { id: "listingid", title: "listingid" }
+//   ]
+// });
 
-const writeCSV = async () => {
-  let bookingDates = [];
-  let date;
+let bookingDates = [];
+// let date;
+let data;
+var increment = 0;
+let date;
+let available;
+let checkin;
+let checkout;
+let rate;
+let listingid;
 
-  function generateData() {
-    let increment;
-    for (let i = 0; i < years.length; i++) {
-      for (let j = 0; j < datesInMonths.length; j++) {
-        for (let k = 0; k < datesInMonths[j]; k++) {
-          for (let l = 1; l < 101; l++) {
-            date = years[i] + "-" + months[j] + "-" + dates[k];
-            bookingDates.push({
-              date,
-              available: true,
-              checkin: false,
-              checkout: false,
-              rate: Math.floor(Math.random() * 750 + 50),
-              listingid: l
-            });
-            // console.log(increment); // log which record number currently working
-            increment++; // increment record number
-            // if (increment % 1000 === 0) {
-            //   console.log(increment);
-            // }
+writeCSV = async () => {
+  for (let i = 0; i < years.length; i++) {
+    for (let j = 0; j < datesInMonths.length; j++) {
+      for (let k = 0; k < datesInMonths[j]; k++) {
+        for (let l = 1; l < 13700; l++) {
+          date = years[i] + "-" + months[j] + "-" + dates[k];
+          available = true;
+          checkin = false;
+          checkout = false;
+          rate = Math.floor(Math.random() * 750 + 50);
+          listingid = l;
+
+          data = `${date},${available},${checkin},${checkout},${rate},${listingid}\n`;
+          let ok = true;
+          function generateData() {
+            if (l === 0) {
+              stream.write(data); // needs callback as a parameter to write() (inherited method of fs)
+            } else {
+              increment++;
+              if (increment % 10000 === 0) {
+                console.log(increment);
+              }
+              ok = stream.write(data);
+            }
           }
+          // do {
+          if (l > 0 && ok) {
+            generateData();
+          }
+          // } while (l > 0 && ok);
         }
       }
     }
+    if (i > 0) {
+      stream.once("drain", generateData);
+    }
   }
-  await generateData();
-  await file.write(csvStringifier.stringifyRecords(bookingDates));
-  mongoose.connection.close(); // only necessary if we need to seed directly into MongoDB
+  // await mongoose.connection.close();
+  console.log(`you've successfully written the CSV file, export to database`);
 };
 
-const asyncWrite = async () => {
-  await writeCSV();
-  console.log(`successfully wrote booking dates to CSV file`);
-};
+writeCSV(() => {
+  console.log(`done writing CSV...`);
+});
+// .then(() => mongoose.connection.close())
+// .catch(err => mongoose.connection.close());
 
-file.write(csvStringifier.getHeaderString()); // writes the CSV header row
-asyncWrite();
+// THIS CAN SEED 73,000 DATES USING CSV-WRITER
+// const writeCSV = async () => {
+// let bookingDates = [];
+// let date;
+
+// function generateData() {
+//   let increment;
+//   for (let i = 0; i < years.length; i++) {
+//     for (let j = 0; j < datesInMonths.length; j++) {
+//       for (let k = 0; k < datesInMonths[j]; k++) {
+//         for (let l = 1; l < 101; l++) {
+//           date = years[i] + "-" + months[j] + "-" + dates[k];
+//           bookingDates.push({
+//             date,
+//             available: true,
+//             checkin: false,
+//             checkout: false,
+//             rate: Math.floor(Math.random() * 750 + 50),
+//             listingid: l
+//           });
+//           // console.log(increment); // log which record number currently working
+//           increment++; // increment record number
+//           // if (increment % 1000 === 0) {
+//           //   console.log(increment);
+//           // }
+//         }
+//       }
+//     }
+//   }
+// }
+//   await generateData();
+//   await file.write(csvStringifier.stringifyRecords(bookingDates));
+//   mongoose.connection.close(); // only necessary if we need to seed directly into MongoDB
+// };
+
+// const asyncWrite = async () => {
+//   await writeCSV();
+//   console.log(`successfully wrote booking dates to CSV file`);
+// };
+
+// file.write(csvStringifier.getHeaderString()); // writes the CSV header row
+// asyncWrite();

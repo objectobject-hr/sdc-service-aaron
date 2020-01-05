@@ -6,7 +6,7 @@ const bookingDateSchema = new mongoose.Schema({
   date: String,
   available: Boolean,
   checkin: Boolean,
-  rate: Number, // default was NUMERIC(10, 2)
+  rate: Number,
   checkout: Boolean,
   listingid: { type: Number, index: true }
 });
