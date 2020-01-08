@@ -2,21 +2,32 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-const cors = require("cors");
-const BookingDate = require("../dbhelpers/models").BookingDate;
-const Listing = require("../dbhelpers/models").Listing;
+// const cors = require('cors');
+// const BookingDate = require("../dbhelpers/models").BookingDate;
+// const Listing = require("../dbhelpers/models").Listing;
 const path = require("path");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+// const db = require("../dbhelpers/postgres/index"); // uncomment for postgres
+const db = require("../../dbhelpers/mongodb/index.js");
 
 const app = express();
-const port = 3000;
+// const port = 3009;
+const PORT = process.env.PORT || 3009;
 
-app.use(cors());
+// app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "../client/dist")));
+
+// app.get('/all' (req, res) => {
+//   BookingDate.
+// })
+
+app.listen(PORT, () => {
+  console.log("we are listening to port", PORT + ",  m o s t l y   k e y s");
+});
 
 app.get("/dates/:id", (req, res) => {
   // console.log(req.params);
@@ -130,6 +141,6 @@ app.get("/listings/search/:id", (req, res) => {
   });
 });
 
-// app.listen(port, () => {
-//   console.log("App is listening on port", port);
-// });
+app.listen(port, () => {
+  console.log("App is listening on port", port);
+});
