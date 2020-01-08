@@ -10,16 +10,10 @@ db.connect()
   .then(() => {
     console.log(`we are now connected to  m o s t l y   k e y s`);
   })
-  // .then(() => {
-  //   db.query("DROP TABLE IF EXISTS listings");
-  // })
-  // .then(() => {
-  //   db.query("DROP TABLE IF EXISTS dates");
-  // })
   .then(() => {
     // id serial primary key,
     db.query(
-      `CREATE TABLE IF NOT EXISTS dates (
+      `CREATE TABLE IF NOT EXISTS bookingdates (
         date varchar(355),
         available BOOLEAN not null,
         checkin BOOLEAN not null,

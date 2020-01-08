@@ -13,6 +13,10 @@ const file = path.join(__dirname, "pglistings.csv");
 const string = "";
 const stream = fs.createWriteStream(file);
 
+// const header =
+//   "title;venuetype;bedrooms;sleepcapacity;bathrooms;squarefeet;reviewoverview;rating;reviewnumber;owners;cleaningfee;states;city;pic;listingid\n";
+// stream.write(header, "utf8");
+
 listingAdjectives = [
   "sunset roost",
   "lux",
@@ -294,7 +298,7 @@ dates = [
 ];
 
 writeCSV = callback => {
-  let i = 10000000;
+  let i = 1000000;
 
   function generateData() {
     let ok = true;
@@ -305,11 +309,9 @@ writeCSV = callback => {
         console.log(i);
       }
 
-      // let k;
       let listings = [];
       let obj;
       let listingcount = 0;
-      // for (let i = 0; i < 1000000; i++) {
       obj = {};
       let title =
         listingAdjectives[
@@ -336,11 +338,9 @@ writeCSV = callback => {
       let cleaningfee = Math.floor(Math.random() * 100) + 10;
       let states = faker.address.state();
       let city = faker.address.city();
-      // k = i + 1;
       let pic = faker.image.image();
+      // let listingid = i;
       let data = `${title};${venuetype};${bedrooms};${sleepcapacity};${bathrooms};${squarefeet};${reviewoverview};${rating};${reviewnumber};${owners};${cleaningfee};${states};${city};${pic}\n`;
-      // listings.push(obj);
-      // listingcount = listingcount + 1;
 
       if (i === 0) {
         stream.write(data, callback);
@@ -348,7 +348,6 @@ writeCSV = callback => {
       } else {
         ok = stream.write(data);
       }
-      // }
     } while (i > 0 && ok);
     if (i > 0) {
       stream.once("drain", generateData);
@@ -370,8 +369,13 @@ writeCSV(() => {
         `COPY listings FROM '/Users/aaronsouthammavong/hrla33/sdc-service-aaron/dbhelpers/postgres/pglistings.csv' DELIMITER ';' CSV`
       )
         .then(() => {
+          db.query(`ALTER TABLE listings ADD id serial;`);
           console.log(`successfully seeded database`);
-          db.end();
+          // db.end();
+        })
+        .then(() => {
+          db.query(`create index idx_listings_listingid on listings(id);`);
+          console.log(`indexed id`);
         })
         .catch(err => {
           throw err;

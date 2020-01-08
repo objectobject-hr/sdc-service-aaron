@@ -35,29 +35,34 @@ class App extends React.Component {
     };
   }
 
+  // IF USING MONGODB, USE RESPONSE.DATA
+  // IF USING POSTGRES, USE RESPONSE.DATA[0]
   componentDidMount() {
     let randomNumber = Math.floor(Math.random() * 104) + 1;
     axios
       .get(`/mlistings/${randomNumber}`)
-      // .then(response => console.log(response.data));
+      // .then(response => console.log(response.data[0]))
       // .then(results => results.data[0])
       // .catch(err => console.log(err))
       .then(response => {
-        this.props.setTitle(response.data.title);
-        this.props.setSleepCapacity(response.data.sleepcapacity);
-        this.props.setUSState(response.data.states);
-        this.props.setReviewOverview(response.data.reviewoverview);
-        this.props.setRating(Number(response.data.rating));
-        this.props.setReviewNumber(response.data.reviewnumber);
-        this.props.setOwner(response.data.owners);
-        this.props.setCleaningFee(response.data.cleaningfee);
-        this.props.setCity(response.data.city);
-        this.props.setPic(response.data.pic);
+        this.props.setTitle(response.data[0].title);
+        this.props.setSleepCapacity(response.data[0].sleepcapacity);
+        this.props.setUSState(response.data[0].states);
+        this.props.setReviewOverview(response.data[0].reviewoverview);
+        this.props.setRating(Number(response.data[0].rating));
+        this.props.setReviewNumber(response.data[0].reviewnumber);
+        this.props.setOwner(response.data[0].owners);
+        this.props.setCleaningFee(response.data[0].cleaningfee);
+        this.props.setCity(response.data[0].city);
+        this.props.setPic(response.data[0].pic);
         // console.log(response.data);
-        return response.data.listingid;
+        return response.data[0].id; // use listingid if using MongoDB
       })
-      .then(listingid => axios.get(`/dates/${listingid}`))
-      .then(dates => this.props.setRate(dates.data.rate))
+      .then(id => axios.get(`/dates/${id}`)) // use listingid if using MongoDB
+      // .then(response => {
+      //   console.log(response.data[0]);
+      // })
+      .then(dates => this.props.setRate(dates.data[0].rate))
       .catch(error => console.log(error));
   }
 
