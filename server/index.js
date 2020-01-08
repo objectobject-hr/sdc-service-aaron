@@ -12,7 +12,7 @@ const Op = Sequelize.Op;
 const app = express();
 const port = 3000;
 
-app.use(cors());
+// app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
@@ -130,6 +130,6 @@ app.get("/listings/search/:id", (req, res) => {
   });
 });
 
-// app.listen(port, () => {
-//   console.log("App is listening on port", port);
-// });
+app.listen(port, () => {
+  console.log("App is listening on port", port);
+});

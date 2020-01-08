@@ -7,8 +7,6 @@ const router = require("./router");
 // const BookingDate = require("../dbhelpers/models").BookingDate;
 // const Listing = require("../dbhelpers/models").Listing;
 const path = require("path");
-const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
 // const db = require("../dbhelpers/postgres/index"); // uncomment for postgres
 const db = require("../../dbhelpers/mongodb/index.js");
 
