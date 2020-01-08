@@ -110,3 +110,5 @@ mongoListings.csv
 
 pglistings.csv
 pgBookingDates.csv
+sdc.pem
+.env

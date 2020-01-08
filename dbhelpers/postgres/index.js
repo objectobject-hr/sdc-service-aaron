@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { Pool, Client } = require("pg");
 const connectionLocation = "postgres://localhost:5432/sdc_pg";
 // const createDB = require("./index");
